@@ -1,7 +1,6 @@
 
 % An implementation of Eugene M. Izhikevich's Simple Model of Spiking Neurons 2003
-close all
-clear all
+
 
 
 neuron_type = 'rs' %Excititory (rs, ib, ch) Inhibitory (fs, lts, tc, rz) 
@@ -14,57 +13,57 @@ switch neuron_type
         c = -65; %describes resting potential
         d = 8; %afterspike jump
     case 'ib'
-        a = .02; %scale of recovery variable, smaller value, slower recovery
-        b = .2; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -55; %describes resting potential
-        d = 4; %afterspike jump
+        a = .02;
+        b = .2; 
+        c = -55; 
+        d = 4; 
     case 'ch'
-        a = .02; %scale of recovery variable, smaller value, slower recovery
-        b = .2; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -50; %describes resting potential
-        d = 2; %afterspike jump
+        a = .02; 
+        b = .2; 
+        c = -50; 
+        d = 2; 
     case 'fs'
-        a = .1; %scale of recovery variable, smaller value, slower recovery
-        b = .2; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -65; %describes resting potential
-        d = 2; %afterspike jump
+        a = .1; 
+        b = .2; 
+        c = -65; 
+        d = 2; 
     case 'lts'
-        a = .02; %scale of recovery variable, smaller value, slower recovery
-        b = .25; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -65; %describes resting potential
-        d = 2; %afterspike jump
+        a = .02;
+        b = .25; 
+        c = -65; 
+        d = 2; 
     case 'tc'
-        a = .02; %scale of recovery variable, smaller value, slower recovery
-        b = .2; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -60; %describes resting potential
-        d = 2; %afterspike jump
+        a = .02; 
+        b = .2; 
+        c = -60;
+        d = 2; 
     case 'rz'
-        a = .1; %scale of recovery variable, smaller value, slower recovery
-        b = .26; %sensitivity of the recovery variable u to subthreshold fluctuations
-        c = -65; %describes resting potential
-        d = 2; %afterspike jump
+        a = .1;
+        b = .26; 
+        c = -65; 
+        d = 2; 
 end
 
 v = c ;
 u = b*v;
 
-voltages=zeros(1000,1);
+time =1000
+
+voltages=zeros(time,1);
 
 I=0; %intial input of zero
-for t=1:1000 %simulate for 1 second
+for t=1:time %simulate for 2 second
+   if t==250 % send dc pulse of I=10 at ten seconds, see paper
+       I=10;
+   end
+   
+   if t==500
+       I=0;
+   end
    if(v>=30) % reset after spike
        v = c; % reset voltage to rest
        u = u + d; %reset recovery variable
    end
-   if t==100 % send dc pulse of I=10 at ten seconds, see paper
-       I=10;
-   end
-   if strcmp(neuron_type,'rz') && t==200
-       I=I+10;
-   end 
-   if strcmp(neuron_type,'rz') && t==250
-       I=I-10;
-   end 
    v = v + ((.04*(v^2))+(5*v) +140 -u + I);
    u = u + a*((b*v) - u ); 
    voltages(t)= v;
@@ -75,7 +74,7 @@ figure
 plot(voltages)
 xlabel('Time Ms')
 ylabel('Membrane Potential mV')
-axis([0 1000 -100 30])
+axis([0 time -100 30])
 
 
 
