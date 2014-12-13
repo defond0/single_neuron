@@ -59,18 +59,20 @@ rising = 'rising';
 falling = 'falling';
 
 time = 1000;
+spikeonset=250
+spikeduration=100;
 
 voltages=zeros(time,1);
 Ivoltages = zeros(time,1);
-Mode = resting;
+Mode = resting
 
 I=0; %intial input of zero
 for t=1:time %simulate for 1 second
-   if t==250 % send dc pulse of I=10 
+   if t==spikeonset % send dc pulse of I=10 
        I=10;
    end
    
-   if t==255
+   if t==spikeonset+spikeduration;
        I=0;
    end
    iv = iv + ((.04*(iv^2))+(5*iv) +140 -iu + I);
@@ -84,7 +86,7 @@ for t=1:time %simulate for 1 second
       maxi = max(Ivoltages);
    
     
-   q=.2;
+   q=.01;
   
    adj=77;
       
@@ -102,23 +104,25 @@ for t=1:time %simulate for 1 second
                v = v + abs((q*v) -u -adj + I);
                u = u + a*((b*v) - u );
                if((I==0)&(v<30))
-                   Mode=resting;
+                   Mode=resting
                elseif(v>=30)
                    Mode=rising
                end
        case rising
-                v =v+ abs((q*v) -u -adj +I);
-                u = u + a*((b*v) - u );
-                if (v>=95)
-                     v=-80;
+                if (v>=90)
+                     v=c;
                      u = u+d;
                      Mode=falling
                 end
+                v =v+ abs((q*v) -u -adj);
+                u = u + a*((b*v) - u );
+                
        case falling
             v = (v  -(.9*v) -u)-adj;
             u = u + a*((b*v) - u );
-            if(v>=c-d)
-                mode=resting;
+            if(v>=c-10)
+                Mode=resting
+                
             end
    end
 

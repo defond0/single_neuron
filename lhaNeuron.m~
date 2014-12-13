@@ -62,7 +62,7 @@ time = 1000;
 
 voltages=zeros(time,1);
 Ivoltages = zeros(time,1);
-Mode = resting;
+Mode = resting
 
 I=0; %intial input of zero
 for t=1:time %simulate for 1 second
@@ -70,7 +70,7 @@ for t=1:time %simulate for 1 second
        I=10;
    end
    
-   if t==255
+   if t==255;
        I=0;
    end
    iv = iv + ((.04*(iv^2))+(5*iv) +140 -iu + I);
@@ -84,21 +84,22 @@ for t=1:time %simulate for 1 second
       maxi = max(Ivoltages);
    
     
-   q=.1;
-   
+   q=.01;
+  
+   adj=77;
       
    switch Mode
        case resting
            if(I==0)
-                v = v  -(.9*v) -u -75;
+                v = v  -(.9*v) -u -adj;
                 u = u + a*((b*v) - u );
            else
-               v = v + (q*v) -u -75 + (I*2);
+               v = v + abs((q*v) -u -adj + I);
                u = u + a*((b*v) - u );
                Mode=stimulated
            end
        case stimulated
-               v = v + (q*v) -u -75 + (I*2);
+               v = v + abs((q*v) -u -adj + I);
                u = u + a*((b*v) - u );
                if((I==0)&(v<30))
                    Mode=resting;
@@ -106,18 +107,20 @@ for t=1:time %simulate for 1 second
                    Mode=rising
                end
        case rising
-                v = v+(v*800);
-                u = u + a*((b*v) - u );
-                if (v>=95)
-                     v=-80;
+                if ((v>=90)&&((I==0))
+                     v=-80+d;
                      u = u+d;
                      Mode=falling
-                end
+                elseif((v>=90)&&(I~=0))
+                v =v+ abs((q*v) -u -adj);
+                u = u + a*((b*v) - u );
+                
        case falling
-            v = (v  -(.6*v) -u);
+            v = (v  -(.9*v) -u)-adj;
             u = u + a*((b*v) - u );
-            if(v>=c)
-             mode=resting;
+            if(v>=c-5)
+                Mode=resting
+                
             end
    end
 
@@ -126,6 +129,7 @@ for t=1:time %simulate for 1 second
 end
 
 dif = abs(voltages-Ivoltages);
+averageError = sum(dif)/time
 figure
 plot(voltages,'b');
 hold on;
@@ -135,6 +139,6 @@ plot(dif,'g');
 hold off;
 xlabel('Time Ms')
 ylabel('Membrane Potential mV')
-axis([0 time -200 200])
+axis([0 time -100 100])
 
 
