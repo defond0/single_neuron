@@ -60,7 +60,10 @@ falling = 'falling';
 
 time = 1000;
 spikeonset=250
-spikeduration=100;
+spikeduration=5;
+
+spikeonset1=500
+spikeduration1=5;
 
 voltages=zeros(time,1);
 Ivoltages = zeros(time,1);
