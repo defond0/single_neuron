@@ -1,7 +1,8 @@
 
-clear all
-close all
-neuron_type = 'rs' %Excititory (rs, ib, ch) Inhibitory (fs, lts, tc, rz) 
+
+neuron_type = 'fs' %Excititory (rs, ib, ch) Inhibitory (fs, lts, tc, rz) 
+
+duration = 100;
 
 switch neuron_type
     case 'rs'
@@ -47,8 +48,8 @@ vdt = [0,.08,0];
 %v term, u term
 fb = [a*b,-a];
 
-lha = LHANeuron(1000,250,5,v,vdt,fb);
-q = lha.lha();
+lha = LHASpikingNeuron(1000,250,duration,v,vdt,fb);
+lha.lha();
 
 
 

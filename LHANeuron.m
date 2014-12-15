@@ -185,7 +185,6 @@ classdef LHANeuron
                 averageDiff = sum(dif)/time;
                 stdDif=std(dif);
                  if(prevAverageDif<=averageDiff)
-%                 if(prevStdDif<stdDif)
                     averageDiff=prevAverageDif
                     stdDif=prevStdDif
                     restA=prevRest;
