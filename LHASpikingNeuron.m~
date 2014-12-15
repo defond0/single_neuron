@@ -13,7 +13,7 @@ classdef LHASpikingNeuron
         stimulatedOut;
         risingOut;
         fallingOut;
-        stimThresh=30;
+        stimThresh=-10;
         fallingThresh=-8;%25
         risingThresh=-80;
     end
@@ -128,7 +128,7 @@ classdef LHASpikingNeuron
 
                    case rising
                         if(v>risingThresh)
-                            v = c-d;
+                            v = c-20;
                             u = u + d;
                             Mode=falling
                         else
@@ -241,7 +241,7 @@ classdef LHASpikingNeuron
             restingIdx=find(restV);
             stimulatedIdx=find(stimulatedV);
             risingIdx=find(risingV);
-            fallingIdx=find(fallingV);
+            fallingIdx=find(fallingV)
             
             restA=LHASpikingNeuron.findVA(resting,restingIdx,voltages)
             stimA=LHASpikingNeuron.findVA(stimulated,stimulatedIdx,voltages)

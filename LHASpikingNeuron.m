@@ -13,7 +13,7 @@ classdef LHASpikingNeuron
         stimulatedOut;
         risingOut;
         fallingOut;
-        stimThresh=-10;
+        stimThresh=0;
         fallingThresh=-8;%25
         risingThresh=-80;
     end
@@ -244,9 +244,13 @@ classdef LHASpikingNeuron
             fallingIdx=find(fallingV)
             
             restA=LHASpikingNeuron.findVA(resting,restingIdx,voltages)
+            pause = input('finished with restA');
             stimA=LHASpikingNeuron.findVA(stimulated,stimulatedIdx,voltages)
+            pause = input('finished with stimA');
             risingA=LHASpikingNeuron.findVA(rising,risingIdx,voltages)
+            pause = input('finished with risingA');
             fallingA=LHASpikingNeuron.findVA(falling,fallingIdx,voltages)
+            pause = input('finished with fallingA');
             
             LHASpikingNeuron.finalizeAndCheck(restA,stimA,risingA,fallingA,stimThresh, fallingThresh,risingThresh,voltages) ;
             

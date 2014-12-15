@@ -1,8 +1,9 @@
 
 
-neuron_type = 'fs' %Excititory (rs, ib, ch) Inhibitory (fs, lts, tc, rz) 
 
-duration = 100;
+
+duration =input('Input Duration of Desired Stimulation ');
+neuron_type = input('Input Desired Neuron Type ');
 
 switch neuron_type
     case 'rs'
