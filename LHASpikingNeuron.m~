@@ -126,7 +126,7 @@ classdef LHASpikingNeuron
                      end
                     Ivoltages(t)=v;
             end
-            dif = abs(voltages-Ivoltages);
+            dif = abs(Avoltages-Ivoltages);
             averageDiff = sum(dif)/time;
             
             if(prevAverageDif<=averageDiff)
@@ -503,13 +503,6 @@ classdef LHASpikingNeuron
             stimulatedOut(2)=stimA;
             risingOut(2)=risingA;
             fallingOut(2)=fallingA;
-            
-            
-            restingOut(3)=restA;
-            stimulatedOut(3)=stimA;
-            risingOut(3)=risingA;
-            fallingOut(3)=fallingA;
-            
             
             LHASpiking.restingOut=restingOut   ;         
             LHASpiking.stimulatedOut=stimulatedOut;

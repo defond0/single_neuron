@@ -1,7 +1,8 @@
 
+clear all;
+close all;
 
-
-neuron_type = 'fs'%input('Input Desired Neuron Type ');
+neuron_type = 'rs'%input('Input Desired Neuron Type ');
 
 switch neuron_type
     case 'rs'
@@ -48,8 +49,8 @@ vdt = [0,.08,0];
 fb = [a*b,-a];
 duration =5%input('Input Duration of Desired Stimulation ');
 lha = LHASpikingNeuron(100,45,duration,v,vdt,fb);
-[idx,C,sumd,D]=lha.lhaKmean();
-%lha.lha()
+%[idx,C,sumd,D]=lha.lhaKmean();
+lha.lha();
 
 
 
