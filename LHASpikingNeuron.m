@@ -19,10 +19,18 @@ classdef LHASpikingNeuron
     end
     
     methods
+        %output function to get the lha description after analysis
+        %has been run
         function [restingOut,stimulatedOut,risingOut,fallingOut]=getLHA(LHASpikingNeuron);
-                    [restingOut,stimulatedOut,risingOut,fallingOut]=[LHASpingNeuron.restingOut,LHASpingNeuron.stimulatedOut,LHASpingNeuron.risingOut,LHASpingNeuron.fallingOut]
-            end
+            restingOut=LHASpikingNeuron.restingOut;
+             stimulatedOut=LHASpikingNeuron.stimulatedOut;
+             risingOut=LHASpikingNeuron.risingOut
+             fallingOut=LHASpikingNeuron.fallingOut
+        end
         
+        %construct the LHASpikingNeuron object with simulation time, onset
+        %of stimulation, duration of stimulation. v is the 2nd order model,
+        %vdt is the derivative wit respect to time of this model, and fb is the feedback relation. 
         function lha = LHASpikingNeuron(time,onset,duration,v,vdt,fb)
             lha.time=time;
             lha.onset=onset;
@@ -32,6 +40,10 @@ classdef LHASpikingNeuron
             lha.fb=fb;
         end     
         
+        %Try values of A that have the lowest absolute error. Mode is which
+        %mode is to be solved for, index refers to what indexes on the
+        %given model's simulation the model was in mode. voltages are the
+        %voltages from running the given model.
         function VA = findVA(LHASpikingNeuron,mode,index,voltages)
             c = -65;
             d = 8;
@@ -84,6 +96,8 @@ classdef LHASpikingNeuron
             VA=A;
         end
         
+        %Analogous to VA, accept now we find a constant term for the given
+        %mode and agiven A. 
         function Cee = findC(LHASpikingNeuron,A,mode,index,voltages,Avoltages)
             time = LHASpikingNeuron.time;
             onset = LHASpikingNeuron.onset;
@@ -142,52 +156,8 @@ classdef LHASpikingNeuron
             Cee=C
         end
         
-        function VA = findAK(LHASpikingNeuron,index,voltages,cluster)
-            c = -65;
-            d = 8;
-            p=LHASpikingNeuron.fb(1);
-            q=LHASpikingNeuron.fb(2);
-                     
-            time = LHASpikingNeuron.time;
-            onset = LHASpikingNeuron.onset;
-            duration = LHASpikingNeuron.duration;
-            
-            i=0;
-            prevAverageDif=inf;
-            found=false;
-            A=LHASpikingNeuron.vdt(2);
-            prevA=0;
-            currents=zeros(time,1);
-            currents([onset:onset+duration])=10;
-            while(~found)            
-               Ivoltages = zeros(time,1);
-                v=c;                
-                u= v*p/-q;
-                for t=1:time 
-                    I=currents(t);
-                     if(index(t)==cluster)
-                        v=v+v*A+I;
-                     else
-                        v = voltages(t); 
-                     end
-                    Ivoltages(t)=v;
-                end               
-                dif = abs(voltages-Ivoltages);               
-                averageDiff = sum(dif)/time;
-                if(prevAverageDif<=averageDiff)
-                    averageDiff=prevAverageDif                    
-                    A=prevA;
-                    found=true;
-                 else
-                    prevAverageDif=averageDiff;                   
-                    prevA=A;
-                    A=abs(A)*-.1;
-                 end  
-                 i=i+1;
-            end
-            VA=A;
-        end
         
+        %A method to generate Avoltages for findC
         function [IV,D]= prepForC(LHASpikingNeuron,restA,stimA,risingA,fallingA,voltages) 
             time = LHASpikingNeuron.time;
             onset = LHASpikingNeuron.onset;
@@ -260,6 +230,8 @@ classdef LHASpikingNeuron
           
         end
         
+        %A method to generate the final lha and the difference between it
+        %and the model
         function [IV,D]= finalizeAndCheck(LHASpikingNeuron,restA,restC,stimA,stimC,risingA,risingC,fallingA,fallingC,voltages) 
             time = LHASpikingNeuron.time;
             onset = LHASpikingNeuron.onset;
@@ -332,6 +304,7 @@ classdef LHASpikingNeuron
           
         end
         
+        %get voltages for the given model
         function voltagesOut = runGivenModel(LHASpikingNeuron)
             vsq=LHASpikingNeuron.v(1);
             vl=LHASpikingNeuron.v(2);
@@ -365,22 +338,11 @@ classdef LHASpikingNeuron
             
            
         end
-          
-        function  [idx,C,sumd,D]=lhaKmean(LHASpikingNeuron)
-            voltages = LHASpikingNeuron.runGivenModel()
-            time = LHASpikingNeuron.time;
-            [idx,C,sumd,D] = kmeans(voltages,3);
-            [m, maxIdx] = max(C);
-            [m, minIdx] = max(C);
-            %cluster1A = LHASpikingNeuron.findAK(idx,voltages,1)
-            %cluster2A = LHASpikingNeuron.findAK(idx,voltages,2)
-            %cluster3A = LHASpikingNeuron.findAK(idx,voltages,3)
-            
-            
-            
-        end
         
-        function voltages=lha(LHASpikingNeuron)
+        %generate the output for the lha. This method makes calls to ones
+        %above to get an equation of the form V= V+A*V'+C for all modes,
+        %risng, stimulated, falling and rising. 
+        function [IV,V,restingOut,stimulatedOut,risingOut,fallingOut]=lha(LHASpikingNeuron)
             c = -65;
             d = 8;
             
@@ -464,14 +426,11 @@ classdef LHASpikingNeuron
             fallingIdx=find(fallingV);
                         
             restA=LHASpikingNeuron.findVA(resting,restingIdx,voltages)
-            %pause = input('finished with restA');
             stimA=LHASpikingNeuron.findVA(stimulated,stimulatedIdx,voltages)
-            %pause = input('finished with stimA');
             risingA=LHASpikingNeuron.findVA(rising,risingIdx,voltages)
-            %pause = input('finished with risingA');
             fallingA=LHASpikingNeuron.findVA(falling,fallingIdx,voltages)
-            %pause = input('finished with fallingA');
-            
+
+          
             [Ivoltages,dif]=LHASpikingNeuron.prepForC(restA,stimA,risingA,fallingA,voltages) ;
           
             
@@ -481,18 +440,6 @@ classdef LHASpikingNeuron
             fallingC=LHASpikingNeuron.findC(fallingA,falling,fallingIdx,voltages,Ivoltages);
             
             [Ivoltages,dif]=LHASpikingNeuron.finalizeAndCheck(restA,restC,stimA,stimC,risingA,risingC,fallingA,fallingC,voltages) ;
-            
-            figure
-            plot(voltages,'b');
-            hold on;
-            plot(Ivoltages,'r');
-            hold on;
-            plot(dif,'g');
-            hold off;
-            xlabel('Time Ms')
-            ylabel('Membrane Potential mV')
-          
-            axis([0 time -100 100]) 
             
             restingOut=zeros(3,1);
             stimulatedOut=zeros(3,1);
@@ -505,18 +452,20 @@ classdef LHASpikingNeuron
             fallingOut(2)=fallingA;
             
             
-            restingOut(3)=restA;
-            stimulatedOut(3)=stimA;
-            risingOut(3)=risingA;
-            fallingOut(3)=fallingA;
+            restingOut(3)=restC;
+            stimulatedOut(3)=stimC;
+            risingOut(3)=risingC;
+            fallingOut(3)=fallingC;
             
             
-            LHASpiking.restingOut=restingOut   ;         
+            LHASpiking.restingOut=restingOut        ;
             LHASpiking.stimulatedOut=stimulatedOut;
             LHASpiking.risingOut=risingOut;
             LHASpiking.fallingOut=fallingOut;
             
-            
+            IV=Ivoltages;
+            V=voltages;
+         
             
             
         end

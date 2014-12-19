@@ -53,8 +53,7 @@ time = 100
 lha = LHASpikingNeuron(time,47,duration,v,vdt,fb);
 
 %generate LHA
-[Ivoltages,voltages,resting,stimulated,rising,falling]=lha.lha();
-
+[Ivoltages,voltages]=lha.lha();
 
 %plot LHA vs Model
 dif = abs(voltages-Ivoltages);
@@ -69,6 +68,8 @@ xlabel('Time Ms')
 ylabel('Membrane Potential mV')
 axis([0 time -100 100]) 
 
+%Output
+[e,stimulated,rising,falling]= lha.getLHA()
 
 
 
